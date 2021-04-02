@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Models;
 using MySqlConnector;
 using Z.Dapper.Plus;
@@ -17,20 +18,24 @@ namespace termainalc
             var elapsedMs = watch.ElapsedMilliseconds;
 
             DapperPlusManager.Entity<User>().Table("User").Identity(x => x.ID);
+            
             DapperPlusManager.Entity<UserGroup>().Table("UserGroup").Identity(x => x.Id).
             Ignore(x => x.User).AfterAction((kind,x) => {
-                if(kind == DapperPlusActionKind.Insert || kind == DapperPlusActionKind.Merge){
-                    x.User.UserGroupId = x.Id;
+                if(kind == DapperPlusActionKind.Update || kind == DapperPlusActionKind.Merge){
+                    x.User.ForEach(user => user.UserGroupId = x.Id);
                 }
             });
 
-            var user = new User { Account = "user1" };
-            var userGroup = new UserGroup{Name = "group1",User = user};
-            _conn.BulkInsert(userGroup).ThenBulkInsert(x => x.User);
+            var user = new List<User>{
+                new User {ID = 1283, Account = "user1" },
+                new User {ID = 1282, Account = "user2" },
+                new User {ID = 1281, Account = "user3" }
+            };
+            var userGroup = new UserGroup{Id = 8,Name = "group2",User = user};
+            _conn.BulkUpdate(userGroup).ThenBulkUpdate(x => x.User);
             Console.WriteLine(elapsedMs);
             watch.Stop();
         }
-
     }
 }
 
