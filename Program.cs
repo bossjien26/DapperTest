@@ -30,9 +30,11 @@ namespace termainalc
 
             var UserGroup = new List<UserGroup>() {
                 new UserGroup{
+                    Id = 11,
                     Name = "Group1",
                     User = new List<User>{
                         new User{
+                            ID = 28,
                             Name = "小明"
                         },
                         new User{
@@ -45,7 +47,7 @@ namespace termainalc
                 },new UserGroup{
                     Name = "Group2",
                     User = new List<User>{
-                        
+
                     }
                 }
             };
